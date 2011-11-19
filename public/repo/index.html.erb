@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=".fakebook.css" />
+<script type="text/javascript" src=".jquery.js"></script>
+</head>
+<body class="index">
+  <div id="_left">
+    <div id="_top"></div>
+    <% @groups.sort_by { |x| x.first }.each do |ary| %>
+      <% group = ary.first %>
+      <% array = ary.last %>
+      <% id = '_group_' + group.gsub(/\W/, '_') %>
+      <div id="_letter_<%= group.gsub(/\W/, '_') %>" class="group">
+        <a href="#" onclick="$('#<%= id %>').toggle(250); return false;"><span class="group"><%= group %></span></a>
+      </div>
+      <ul id="<%= id %>" class="toggle">
+      <% if array.first.is_a?(Document) %>
+        <% array.inject({}) do |hash, doc| 
+            key = doc.name.gsub(/\..+$/, '')
+            hash[key] ||= []
+            hash[key] << doc.name
+            hash
+          end.sort { |a, b| a.first.downcase <=> b.first.downcase }.each do |song| %>
+          <% id = '_' + group.gsub(/\W/, '_') + '_' + song.first.gsub(/\W/, '_') %>
+          <li><a href="#" onclick="$('#<%= id %>').toggle(250); return false;"><b><%= song.first %></b></a><ul id="<%= id %>" class="toggle">
+          <% song.last.sort.each do |doc| %>
+             <li><a class="document" target="_blank" href="<%= URI.escape(doc) %>"><%= doc %></a></li>
+          <% end %>
+          </ul></li>
+        <% end %>
+      <% else %>
+        <% array.first.taggings.inject({}) do |hash, tagging| 
+            key = tagging.taggable.name.gsub(/\..+$/,'')
+            hash[key] ||= []
+            hash[key] << tagging.taggable.name
+            hash
+          end.sort { |a, b| a.first.downcase <=> b.first.downcase }.each do |song| %>
+          <% id = '_' + group.gsub(/\W/, '_') + '_' + song.first.gsub(/\W/, '_') %>
+          <li><a href="#" onclick="$('#<%= id %>').toggle(250); return false;"><b><%= song.first %></b></a><ul id="<%= id %>" class="toggle">
+          <% song.last.sort.each do |doc| %>
+             <li><a class="document" target="_blank" href="<%= URI.escape(doc) %>"><%= doc %></a></li>
+          <% end %>
+          </ul></li>
+        <% end %>
+      <% end %>
+      </ul>
+    <% end %>
+    <% if @recent.present? %>
+      <% id = '_Recent' %>
+      <div class="group">
+        <a href="#" onclick="$('#<%= id %>').toggle(250); return false;"><span class="group"><i>new &middot; different</i></span></a> 
+        <span id="_recent_date"><code><%= @recent_date.strftime('%B %d, %Y') %> - <%= Time.now.strftime('%B %d, %Y') %></code></span>
+      </div>
+      <ul id="<%= id %>" class="toggle">
+      <% @recent.inject({}) do |hash, doc| 
+          key = doc.name.gsub(/\..+$/, '')
+          hash[key] ||= []
+          hash[key] << doc.name
+          hash
+        end.sort { |a, b| a.first.downcase <=> b.first.downcase }.each do |song| %>
+        <% id = 'Recent_' + song.first.gsub(/\W/, '_') %>
+        <li><a href="#" onclick="$('#<%= id %>').toggle(250); return false;"><b><%= song.first %></b></a><ul id="<%= id %>" class="toggle">
+        <% song.last.sort.each do |doc| %>
+           <li><a class="document" target="_blank" href="<%= URI.escape(doc) %>"><%= doc %></a></li>
+        <% end %>
+        </ul></li>
+      <% end %>
+      </ul>
+    <% end %>
+    <% if @untagged.present? %>
+      <% id = '_Other' %>
+      <div class="group">
+        <a href="#" onclick="$('#<%= id %>').toggle(250); return false;"><span class="group"><i>unidentified</i></span></a>
+      </div>
+      <ul id="<%= id %>" class="toggle">
+      <% @untagged.inject({}) do |hash, doc| 
+          key = doc.name.gsub(/\..+$/, '')
+          hash[key] ||= []
+          hash[key] << doc.name
+          hash
+        end.sort { |a, b| a.first.downcase <=> b.first.downcase }.each do |song| %>
+        <% id = 'Other_' + song.first.gsub(/\W/, '_') %>
+        <li><a href="#" onclick="$('#<%= id %>').toggle(250); return false;"><b><%= song.first %></b></a><ul id="<%= id %>" class="toggle">
+        <% song.last.sort.each do |doc| %>
+           <li><a class="document" target="_blank" href="<%= URI.escape(doc) %>"><%= doc %></a></li>
+        <% end %>
+        </ul></li>
+      <% end %>
+      </ul>
+      <br />
+    <% end %>
+  </div>
+  <div id="_bottom"></div>
+  <div id="_right">
+    <table id="nav">
+      <tr>
+        <td><a href="#_top">&uarr;</a></td>
+        <% ('A'..'C').each do |letter| %>
+          <td><a href="#_letter_<%= letter %>"><%= letter %></a></td>
+        <% end %> 
+      </tr>
+      <tr>
+        <% ('D'..'G').each do |letter| %>
+          <td><a href="#_letter_<%= letter %>"><%= letter %></a></td>
+        <% end %> 
+      </tr>
+      <tr>
+        <% ('H'..'K').each do |letter| %>
+          <td><a href="#_letter_<%= letter %>"><%= letter %></a></td>
+        <% end %> 
+      </tr>
+      <tr>
+        <% ('L'..'O').each do |letter| %>
+          <td><a href="#_letter_<%= letter %>"><%= letter %></a></td>
+        <% end %> 
+      </tr>
+      <tr>
+        <% ('P'..'S').each do |letter| %>
+          <td><a href="#_letter_<%= letter %>"><%= letter %></a></td>
+        <% end %> 
+      </tr>
+      <tr>
+        <% ('T'..'W').each do |letter| %>
+          <td><a href="#_letter_<%= letter %>"><%= letter %></a></td>
+        <% end %> 
+      </tr>
+      <tr>
+        <% ('X'..'Z').each do |letter| %>
+          <td><a href="#_letter_<%= letter %>"><%= letter %></a></td>
+        <% end %> 
+        <td><a href="#_bottom">&darr;</a></td>
+      </tr>
+      <tr><td colspan="4">
+        <span class="toggleX"><a href="#" onclick="show_links(); return false;">expand</a></span>
+        <span class="toggle"><a href="#" onclick="hide_links(); return false;">collapse</a></span>
+        all
+      </td></tr>
+      <tr><td colspan="4">
+        separate tabs<input type="checkbox" checked="checked" onclick="toggle_new_tab($(this));">
+      </td></tr>
+      <tr><td colspan="4">
+        <input type="submit" value="h i t  m e" onclick="roulette(); return false;">
+        <input type="checkbox" id="_solitare" checked="checked" onclick="clear_deck()">
+        <div id="_roulette"></div>
+      </td></tr>
+    </table>
+  </div>
+  <div id="_footer"><code>Last updated on <%= Time.now.strftime('%B %d, %Y') %></code></div>
+  <script>
+    $(function(){ 
+      $('.toggle').hide() 
+    });
+    
+    function show_links() {
+      $('.toggle').show(); 
+      $('.toggleX').hide()
+    };
+    
+    function hide_links() {
+      $('.toggle').hide(); 
+      $('.toggleX').show()
+    };
+    
+    function toggle_new_tab(checkbox) {
+      if (checkbox.attr('checked')) {
+        $('input:checkbox').attr('checked', 'checked');
+        $('.document').attr('target', '_blank');
+      } else {
+        $('input:checkbox').removeAttr('checked'); 
+        $('.document').removeAttr('target');
+      }
+    };
+    
+    function roulette() {
+      clear_deck();
+      var documents = $('a.document[href$=".pdf"]');
+      var rand = Math.floor(Math.random() * documents.size());
+      $('#_roulette').prepend( documents[ rand ] );
+      $('#_roulette').prepend( '<br />' );
+    };
+
+    function clear_deck() {
+      if ( ! $('#_solitare')[0].checked ) {
+        $('#_roulette').empty();
+      }
+    }
+  </script>
+</body>
+</html>

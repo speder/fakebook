@@ -1,0 +1,20 @@
+<div id="tags">
+  <% @tag_groups.each do |group| %>
+    <h3><a href="#"><%= group.first %></a></h3>
+    <ul>
+      <% group.last.each do |doc| %>
+        <li><%= link_to doc.name, document_path(doc) %></li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>
+<script type="text/javascript">
+  $(function() {
+    $('#tags').accordion({
+      active: false,
+      autoHeight: false,
+      collapsible: true,
+      navigation: true
+    });
+  });
+</script>

@@ -1,0 +1,6 @@
+bin
+.bundle
+log/*.log
+.rbenv-version
+.sass-cache/
+tmp/

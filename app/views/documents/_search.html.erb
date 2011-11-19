@@ -1,0 +1,12 @@
+<input type="text" id="search_term" placeholder="search documents" />
+<script type="text/javascript">
+  $(function() {
+    $("#search_term").autocomplete({
+      source: "<%= search_documents_path %>",
+      minLength: 2,
+      select: function(event, ui) {
+        window.location = "/documents/" + ui.item.id;
+      }
+    });
+  });
+</script>

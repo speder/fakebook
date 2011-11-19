@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fakebook</title>
+  <%= stylesheet_link_tag    "application" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+  <script type="text/javascript">
+<%= yield :javascript %>
+  </script>
+</head>
+<body>
+  <div id="flash">
+    <% if alert %>
+      <div id="alert"><%= alert %></div>
+    <% end %>
+    <% if notice %>
+      <div id="notice"><%= notice %></div>
+    <% end %>
+  </div>
+  <div id="nav">
+    <%= link_to :documents, documents_path %> | 
+    <%= link_to :tags, tags_path %> | 
+    <%= render 'documents/search' %>
+  </div>
+<%= yield %>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<fieldset>
+  <legend><%= @document.name %></legend>
+  <p> <b>Name:</b> <%= @document.name %> </p>
+  <p> <b>Date:</b> <%= @document.date %> </p>
+  <p> <b>Author:</b> <%= @document.author %> </p>
+  <p> <b>Revision:</b> <%= @document.revision %> </p>
+  <p> <b>Size:</b> <%= @document.size %> </p>
+  <p> <b>Tags</b> </p>
+  <input type="text" id="search_tags" placeholder="search tags" />
+  <input type="text" id="add_new_tag" placeholder="add new tag" />
+  <%= form_for(@document) do |f| %>
+    <div id="document_tag_fields">
+      <% if @document.tags.present? %>
+        <% @document.tags.sort.each do |tag| %>
+          <div class="field">
+            <input type="checkbox" name="document[tags][]" checked="checked" value="<%= tag %>" />
+            <%= tag %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+    <div class="actions">
+      <%= f.submit :update %>
+      <%= link_to :cancel, documents_path %>
+    </div>
+  <% end %>
+</fieldset>
+
+<div id="grouped_tags">
+<% @tag_groups.each do |group| %>
+  <h3><a href="#"><%= group.first %></a></h3>
+  <div>
+  <% group.last.each do |tag| %>
+    <input type="checkbox" <%= @document.tags && @document.tags.include?(tag) ? 'checked="checked"' : '' %> value="<%= tag %>" /><%= tag %> &middot;
+  <% end %>
+  </div>
+<% end %>
+</div>
+
+<script type="text/javascript">
+  $(function() {
+    var source = $('#grouped_tags');
+    var target = $('#document_tag_fields');
+    var add_new_tag = $('#add_new_tag');
+    var search_tags = $('#search_tags');
+    function add_tag(text) {
+      target.append('<div class="field"><input type="checkbox" name="document[tags][]" checked="checked" value="' + text + '" />' + text + '</div>');
+    }
+    add_new_tag.keypress(function(e) {
+      if (e.which == 13) {
+        var e = $(this);
+        var tag = $.trim(e.val());  
+        if (tag.match(/\S/)) {
+          add_tag(tag);
+          e.val('').end().blur();
+        }
+      }
+    });
+    search_tags.autocomplete({
+      source: "<%= search_tags_path %>",
+      minLength: 2,
+      select: function(event, ui) {
+        add_tag(ui.item.value);
+      },
+      close: function(event, ui) {
+        search_tags.val('');
+      }
+    });
+    source.accordion({
+      active: false,
+      autoHeight: false,
+      collapsible: true,
+      navigation: true
+    });
+//  source.find('span').on('click', function() { // 1.7
+    source.delegate('input:checkbox', 'click', function() {
+      var e = $(this);
+      if (e.is(':checked')) {
+        add_tag(e.val());
+      }
+    });
+//  target.find('input:checkbox').on('click', function() { // 1.7
+    target.delegate('input:checkbox', 'click', function() {
+      var e = $(this);
+      source.find('input:checked[value="' + e.val() + '"]').each(function() {
+        $(this).attr('checked', false);
+      }); 
+      e.closest('div').remove();
+    });
+  });
+</script>
