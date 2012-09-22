@@ -1,14 +1,13 @@
 Set Ruby and install Gems:
 
-    rbenv local 1.9.3-p194
     gem install bundler
     bundle install --binstubs --path .bundle --shebang ruby-local-exec
 
-    # bin/rake db:boot
+Configure Nginx and reload it
 
-Configure Nginx and restart it
-
-    script/dev
+    vi config/nginx.conf.example
+    cp config/nginx.conf.example /path/to/nginx/conf/conf.d/fakebook
+    sudo /path/to/nginx/sbin/nginx -s reload
 
 Start Thin and DelayedJob
 
