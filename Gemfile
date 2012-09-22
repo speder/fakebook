@@ -2,6 +2,7 @@ source 'http://rubygems.org'
 
 gem "bson_ext"
 gem 'delayed_job_mongoid'
+gem 'foreman'
 gem 'hpricot'
 gem 'htmlentities'
 gem 'jquery-rails'
@@ -20,10 +21,3 @@ group :assets do
   gem 'uglifier'
 end
 
-group :development do
-  gem 'brakeman'
-  gem 'foreman'
-  gem 'pry'
-  gem 'rack-webconsole'
-  gem 'rails_best_practices'
-end
