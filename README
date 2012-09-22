@@ -1,14 +1,19 @@
-Set Ruby and install Gems:
+Dependencies:
 
-    gem install bundler
-    bundle install --binstubs --path .bundle --shebang ruby-local-exec
+  Ruby
+  MongoDB
+  Nginx
 
-Configure Nginx and reload it
+Install Gems:
 
-    vi config/nginx.conf.example
-    cp config/nginx.conf.example /path/to/nginx/conf/conf.d/fakebook
-    sudo /path/to/nginx/sbin/nginx -s reload
+  bundle install
 
-Start Thin and DelayedJob
+Configure Nginx and reload it:
 
-    bin/foreman start -p 3000
+  cp config/nginx.conf.example /path/to/nginx/conf/conf.d/fakebook
+  vi /path/to/nginx/conf/conf.d/fakebook
+  sudo /path/to/nginx/sbin/nginx -s reload
+
+Start Thin and DelayedJob:
+
+  foreman start -p 3000
