@@ -1,0 +1,41 @@
+<div id='modal' title='i n i t i a l i z e'>
+  <p>
+    <% if @modified.empty? %>
+      <span class='ui-icon ui-icon-help'></span>
+      <h5>Initialize from the master repository?</h5>
+    <% else %>
+      <span class='ui-icon ui-icon-alert'></span>
+      <h5>Discard these changes</h5>
+      <ol>
+      <% @modified.each do |doc| %>
+        <li><%= doc.name %></li>
+      <% end %>
+      </ol>
+      <h5>and re-initialize from the master repository?</h5>
+    <% end %>
+  </p>
+</div>
+
+<p style='display:none'>
+  <%= link_to 'i n i t i a l i z e', repository_path, :method => :post, :id => 'submit' %>
+</p>
+
+<script type="text/javascript">
+$(function() {
+  $( '#modal' ).dialog({
+    modal: true,
+    width: 440,
+    resizable: false,
+    buttons: {
+      'i n i t i a l i z e': function() {
+        $( this ).dialog( "close" );
+        $( '#submit' ).click();
+      },
+      'c a n c e l': function() {
+        $( this ).dialog( "close" );
+        location = "<%= documents_path %>";
+      }
+    }
+  });
+});
+</script>

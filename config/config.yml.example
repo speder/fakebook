@@ -1,0 +1,14 @@
+---
+development:
+  pubsub:
+    base_path: "/PATH"
+  svn:
+    local_path: "/PATH"
+  auth:
+    user:
+      username: "USER"
+      password: "PASS"
+      svn:
+        username: "USER"
+        password: "PASS"
+

@@ -1,0 +1,40 @@
+<div id='modal' title='s a v e &middot; c h a n g e s'>
+  <p>
+    <span class='ui-icon ui-icon-help'></span>
+    <% if @modified.empty? %>
+      <h5>Re-create the HTML index?</h5>
+    <% else %>
+      <h5>Save these changes</h5>
+      <ol>
+      <% @modified.each do |doc| %>
+        <li><%= doc.name %></li>
+      <% end %>
+      </ol>
+      <h5>and re-create the HTML index?</h5>
+    <% end %>
+  </p>
+</div>
+
+<p style='display:none;'>
+  <%= link_to 's a v e', repository_path, :method => :put, :id => 'submit' %>
+</p>
+
+<script type='text/javascript'>
+$(function() {
+  $( '#modal' ).dialog({
+    modal: true,
+    width: 440,
+    resizable: false,
+    buttons: {
+      's a v e': function() {
+        $( this ).dialog( 'close' );
+        $('#submit').click();
+      },
+      'c a n c e l': function() {
+        $( this ).dialog( 'close' );
+        location = '<%= documents_path %>';
+      }
+    }
+  });
+});
+</script>

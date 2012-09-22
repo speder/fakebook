@@ -1,27 +1,20 @@
-/*!
- * jQuery Chord Transposer plugin v1.0
- * http://codegavin.com/projects/transposer
- *
- * Copyright 2010, Jesse Gavin
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://codegavin.com/license
- *
- * Date: Sat Jun 26 21:27:00 2010 -0600
+/*
+ * song page
  */
-span { 
+.song span { 
   font-weight: normal; 
   color: black;
 }
-span.c { 
+.song span.c { 
   font-weight: bold; 
   color: royalblue;
 }
-.transpose-keys {
+.song .transpose-keys {
 	margin: 10px 0;
 	overflow: auto;
 	font: normal 11px sans-serif;
 }
-.transpose-keys a { 
+.song .transpose-keys a { 
 	display: block;
 	float: left;
 	width: 2.25em;
@@ -34,18 +27,19 @@ span.c {
 	border: solid 1px transparent;
 	outline: none;
 }
-.transpose-keys a.selected { 
+.song .transpose-keys a.selected { 
   background: royalblue; 
   color: #FFF;
 }
-body span {
-  color: black;
-}
-#color select {
+.song #color select {
   font: normal 11px sans-serif;
 }
-#title {
+.song #title {
   font: bold 15px sans-serif;
+}
+.song #notes {
+  margin-left: 8px;
+  font: normal 12px sans-serif;
 }
 /*
  * index page

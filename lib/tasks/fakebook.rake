@@ -1,67 +1,28 @@
 namespace :db do
+  desc 'Create DelayedJob Indexes'
+  task :indexes => :environment do
+    Delayed::Backend::Mongoid::Job.create_indexes
+  end
+
   desc 'Create Docs and Tags'
   task :boot  => :environment do
-    Document.create_from_repo!
-    Document.add_tags_from_repo!
+    puts "Loading documents from #{Repository.repository}"
+    count = Repository.create_documents { |count| print "#{count}\r"; $stdout.flush }
+    puts "#{count} documents loaded"
+
+    puts "Loading tags from #{Repository.repository}"
+    count = Repository.create_tags { |count| print "#{count}\r"; $stdout.flush }
+    puts "#{count} tags loaded"
   end
 end
 
 namespace :html do
   desc 'Rebuild HTML index'
   task :index => :environment do
-    require 'erb'
-    tag_groups = Document.tags.inject({}) { |hash, tag| hash[tag] = Document.tagged_with(tag); hash }
-    doc_groups = Document.alphabetical.group_by { |doc| doc.name.upcase[0..0] }
-    @groups = doc_groups.merge(tag_groups)
-    @untagged = Document.without_tags
-    @recent = Document.new_or_changed_since(@recent_date = 8.weeks.ago)
-    template = File.expand_path(File.join(Rails.root, 'public/repo/index.html.erb'))
-    html = ERB.new(open(template, 'r') { |f| f.read })
-    output = File.expand_path(File.join(Document.local_path, '.fakebook.html'))
-    open(output, 'w') { |f| f.write(html.result) }
-    puts "rebuilt HTML index in #{output}"
+    puts Repository.create_html_index
   end
 end
-=begin
-namespace :s3 do
-  desc 'Upload zip of docs to s3'
-  task :upload => :zip do
-    require 'aws/s3'
-    AWS::S3::Base.establish_connection!(
-      :access_key_id     => APP_CONFIG['s3']['access_key_id'],
-      :secret_access_key => APP_CONFIG['s3']['secret_access_key']
-    )
-    key = APP_CONFIG['s3']['key']
-    bucket = APP_CONFIG['s3']['bucket']
-    zip = "tmp/#{key}"
-    puts "uploading to #{bucket}"
-    AWS::S3::S3Object.store(
-      key, 
-      open(zip), 
-      bucket, 
-      :access => :public_read
-    )
-    puts "https://s3.amazonaws.com/#{bucket}/#{key}"
-  end
 
-  task :zip => :environment do
-    require 'zip/zip'
-    key = APP_CONFIG['s3']['key']
-    path = "tmp/#{key}"
-    File.delete(path) if File.exists?(path)
-    puts "compressing .doc files in #{Document.local_path}"
-    count = 0
-    Zip::ZipFile.open(path, Zip::ZipFile::CREATE) do |zip|
-      Dir.glob("#{Document.local_path}/*.doc").each do |doc|
-        zip.add(doc.gsub(/.*\//, ''), doc)
-        count += 1
-      end
-      zip.add('index.html', "#{Document.local_path}/.fakebook.html")
-    end
-    puts "compressed %s files into %s" % [count, Bytes.file(path)]
-  end
-end
-=end
 namespace :tags do
   desc 'Read tags from svn repo for doc=...'
   task :get => :environment do
@@ -74,14 +35,14 @@ namespace :tags do
       end
     end
   end
-  
+
   desc 'Set tags in svn repo for doc=... tags="...,..."'
   task :set => :environment do
     unless ENV['doc'] and ENV['tags']
-      puts %Q(usage: rake tags:set doc="Bali Hai.doc" tags="richard rodgers, lorenz hart") 
+      puts %Q(usage: rake tags:set doc="Bali Hai.doc" tags="richard rodgers, lorenz hart")
       exit
     end
-    
+
     if (doc = Document.named(ENV['doc']).first)
       puts 'setting %s - %s' % [ doc.name, ENV['tags'] ]
       doc.set_tags(ENV['tags'])
@@ -96,7 +57,7 @@ namespace :tags do
   task :none => :environment do
     Document.without_tags.each { |doc| puts doc.name }
   end
-  
+
   desc 'Read all tags from svn repo'
   task :all => :environment do
     Document.get_tags_from_repo!.split("\n").sort.each do |line|
@@ -107,24 +68,29 @@ namespace :tags do
 end
 
 namespace :repo do
+  desc 'Info local svn repo'
+  task :info => :environment do
+    puts Repository.info
+  end
+
   desc 'Stat local svn repo'
   task :status => :environment do
-    puts %x(svn status #{File.expand_path(Document.local_path)})
+    puts Repository.status
   end
-  
+
   desc 'Update local svn repo'
   task :update => :environment do
-    puts %x(svn update #{File.expand_path(Document.local_path)})
+    puts Repository.update
   end
-  
+
   desc 'Commit local svn repo'
   task :commit => :environment do
-    puts %x(svn commit -m '' #{File.expand_path(Document.local_path)})
+    puts Repository.commit
   end
-  
+
   desc 'Revert local svn repo'
   task :revert => :environment do
-    puts %x(svn revert -R #{File.expand_path(Document.local_path)})
+    puts Repository.revert
   end
 end
 

@@ -1,0 +1,11 @@
+development:
+  host: localhost
+  database: fakebook
+
+test:
+  host: localhost
+  database: fakebook_test
+
+production:
+  host: localhost
+  database: fakebook

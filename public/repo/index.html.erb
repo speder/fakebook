@@ -17,7 +17,7 @@
       </div>
       <ul id="<%= id %>" class="toggle">
       <% if array.first.is_a?(Document) %>
-        <% array.inject({}) do |hash, doc| 
+        <% array.inject({}) do |hash, doc|
             key = doc.name.gsub(/\..+$/, '')
             hash[key] ||= []
             hash[key] << doc.name
@@ -31,7 +31,7 @@
           </ul></li>
         <% end %>
       <% else %>
-        <% array.first.taggings.inject({}) do |hash, tagging| 
+        <% array.first.taggings.inject({}) do |hash, tagging|
             key = tagging.taggable.name.gsub(/\..+$/,'')
             hash[key] ||= []
             hash[key] << tagging.taggable.name
@@ -50,11 +50,11 @@
     <% if @recent.present? %>
       <% id = '_Recent' %>
       <div class="group">
-        <a href="#" onclick="$('#<%= id %>').toggle(250); return false;"><span class="group"><i>new &middot; different</i></span></a> 
-        <span id="_recent_date"><code><%= @recent_date.strftime('%B %d, %Y') %> - <%= Time.now.strftime('%B %d, %Y') %></code></span>
+        <a href="#" onclick="$('#<%= id %>').toggle(250); return false;"><span class="group"><i>new or different</i></span></a>
+        <span id="_recent_date"><code><%= @recent_date.to_s(:mdy) %> - <%= Time.now.to_s(:mdy) %></code></span>
       </div>
       <ul id="<%= id %>" class="toggle">
-      <% @recent.inject({}) do |hash, doc| 
+      <% @recent.inject({}) do |hash, doc|
           key = doc.name.gsub(/\..+$/, '')
           hash[key] ||= []
           hash[key] << doc.name
@@ -75,7 +75,7 @@
         <a href="#" onclick="$('#<%= id %>').toggle(250); return false;"><span class="group"><i>unidentified</i></span></a>
       </div>
       <ul id="<%= id %>" class="toggle">
-      <% @untagged.inject({}) do |hash, doc| 
+      <% @untagged.inject({}) do |hash, doc|
           key = doc.name.gsub(/\..+$/, '')
           hash[key] ||= []
           hash[key] << doc.name
@@ -99,37 +99,37 @@
         <td><a href="#_top">&uarr;</a></td>
         <% ('A'..'C').each do |letter| %>
           <td><a href="#_letter_<%= letter %>"><%= letter %></a></td>
-        <% end %> 
+        <% end %>
       </tr>
       <tr>
         <% ('D'..'G').each do |letter| %>
           <td><a href="#_letter_<%= letter %>"><%= letter %></a></td>
-        <% end %> 
+        <% end %>
       </tr>
       <tr>
         <% ('H'..'K').each do |letter| %>
           <td><a href="#_letter_<%= letter %>"><%= letter %></a></td>
-        <% end %> 
+        <% end %>
       </tr>
       <tr>
         <% ('L'..'O').each do |letter| %>
           <td><a href="#_letter_<%= letter %>"><%= letter %></a></td>
-        <% end %> 
+        <% end %>
       </tr>
       <tr>
         <% ('P'..'S').each do |letter| %>
           <td><a href="#_letter_<%= letter %>"><%= letter %></a></td>
-        <% end %> 
+        <% end %>
       </tr>
       <tr>
         <% ('T'..'W').each do |letter| %>
           <td><a href="#_letter_<%= letter %>"><%= letter %></a></td>
-        <% end %> 
+        <% end %>
       </tr>
       <tr>
         <% ('X'..'Z').each do |letter| %>
           <td><a href="#_letter_<%= letter %>"><%= letter %></a></td>
-        <% end %> 
+        <% end %>
         <td><a href="#_bottom">&darr;</a></td>
       </tr>
       <tr><td colspan="4">
@@ -147,35 +147,35 @@
       </td></tr>
     </table>
   </div>
-  <div id="_footer"><code>Last updated on <%= Time.now.strftime('%B %d, %Y') %></code></div>
+  <div id="_footer"><code>Last updated on <%= Time.now.to_s(:mdy) %></code></div>
   <script>
-    $(function(){ 
-      $('.toggle').hide() 
+    $(function(){
+      $('.toggle').hide()
     });
-    
+
     function show_links() {
-      $('.toggle').show(); 
+      $('.toggle').show();
       $('.toggleX').hide()
     };
-    
+
     function hide_links() {
-      $('.toggle').hide(); 
+      $('.toggle').hide();
       $('.toggleX').show()
     };
-    
+
     function toggle_new_tab(checkbox) {
       if (checkbox.attr('checked')) {
         $('input:checkbox').attr('checked', 'checked');
         $('.document').attr('target', '_blank');
       } else {
-        $('input:checkbox').removeAttr('checked'); 
+        $('input:checkbox').removeAttr('checked');
         $('.document').removeAttr('target');
       }
     };
-    
+
     function roulette() {
       clear_deck();
-      var documents = $('a.document[href$=".pdf"]');
+      var documents = $("a.document[href$='.html'], a.document[href$='.pdf']");
       var rand = Math.floor(Math.random() * documents.size());
       $('#_roulette').prepend( documents[ rand ] );
       $('#_roulette').prepend( '<br />' );

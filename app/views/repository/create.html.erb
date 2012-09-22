@@ -1,0 +1,28 @@
+<div id='modal' title='i n i t i a l i z e'>
+  <p>
+    <span class='ui-icon ui-icon-circle-check' style='float:left; margin:0 7px 7px 0;'></span>
+    <ul id='output'>
+    </ul>
+  </p>
+</div>
+
+<script type="text/javascript">
+$(function() {
+  $( '#modal' ).dialog({
+    modal: true,
+    width: 640,
+    resizable: false,
+    open: function(e, ui) {
+      $( '.ui-dialog-buttonpane' ).hide();
+    },
+    buttons: {
+      'o k': function() {
+        $( this ).dialog( 'close' );
+        location = "<%= documents_path %>";
+      }
+    }
+  });
+
+  $( '#output' ).pubsub({ url: '<%= @pubsub_uri %>', controls: '.ui-dialog-buttonpane' });
+});
+</script>

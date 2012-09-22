@@ -1,90 +1,134 @@
-<fieldset>
+<% if flash[:notice] %><p class='flash notice'><%= flash[:notice] %></p><% end %>
+
+<fieldset class='document'>
   <legend><%= @document.name %></legend>
-  <p> <b>Name:</b> <%= @document.name %> </p>
-  <p> <b>Date:</b> <%= @document.date %> </p>
-  <p> <b>Author:</b> <%= @document.author %> </p>
-  <p> <b>Revision:</b> <%= @document.revision %> </p>
-  <p> <b>Size:</b> <%= @document.size %> </p>
-  <p> <b>Tags</b> </p>
-  <input type="text" id="search_tags" placeholder="search tags" />
-  <input type="text" id="add_new_tag" placeholder="add new tag" />
+  <ul>
+    <li><b>Date:</b> <%= @document.date %></li>
+    <li><b>Author:</b> <%= @document.author %></li>
+    <li><b>Revision:</b> <%= @document.revision %></li>
+    <li><b>Size:</b> <%= @document.size %></li>
+    <li>
+      <b>Tags</b>
+      <input type='text' id='search_tags' placeholder='search tags' />
+      <input type='text' id='add_new_tag' placeholder='add new tag' />
+    </li>
+  </ul>
+
   <%= form_for(@document) do |f| %>
-    <div id="document_tag_fields">
+    <div id='document_tag_fields'>
       <% if @document.tags.present? %>
         <% @document.tags.sort.each do |tag| %>
-          <div class="field">
-            <input type="checkbox" name="document[tags][]" checked="checked" value="<%= tag %>" />
+          <div class='field'>
+            <input type='checkbox' name='document[tags][]' checked='checked' value='<%= tag %>' />
             <%= tag %>
           </div>
         <% end %>
       <% end %>
     </div>
-    <div class="actions">
-      <%= f.submit :update %>
-      <%= link_to :cancel, documents_path %>
+    <div class='actions'>
+      <%= f.submit 'o k' %>
+      <%= link_to 'c a n c e l', documents_path %>
     </div>
   <% end %>
 </fieldset>
 
-<div id="grouped_tags">
+<script type='text/javascript'>
+$(function() {
+  var $form = $( 'form.edit_document' ),
+      $modified = $( '.modified' );
+
+  $form.on( 'click', 'input:submit', function(event) {
+    var $submit = $( this );
+
+    $submit.val( 'p r o c e s s i n g' ).attr( 'disabled', 'disabled' );
+
+    $( 'p.flash.notice' ).slideUp().remove();
+
+    $.ajax({
+      url: $form.attr( 'action' ),
+      type: 'POST',
+      data: $form.serialize(),
+      dataType: 'json',
+      success: function( data ) {
+        $( '.document' ).before( '<p class="flash notice" style="display:none;" />' );
+        $( 'p.flash.notice' ).html( 'TAGS = [' + data.tags + ']' ).slideDown();
+        $submit.val( 'o k' ).removeAttr( 'disabled' );
+        $modified.showStatus({ url: '<%= repository_path %>' });
+      }
+    });
+
+    return false;
+  });
+});
+</script>
+
+<div id='grouped_tags'>
 <% @tag_groups.each do |group| %>
-  <h3><a href="#"><%= group.first %></a></h3>
+  <h3><a href='#'><%= group.first %></a></h3>
   <div>
   <% group.last.each do |tag| %>
-    <input type="checkbox" <%= @document.tags && @document.tags.include?(tag) ? 'checked="checked"' : '' %> value="<%= tag %>" /><%= tag %> &middot;
+    <input type='checkbox' <%= @document.tags && @document.tags.include?(tag) ? 'checked="checked"' : '' %> value='<%= tag %>' /><%= tag %> &middot;
   <% end %>
   </div>
 <% end %>
 </div>
 
-<script type="text/javascript">
+<script type='text/javascript'>
   $(function() {
-    var source = $('#grouped_tags');
-    var target = $('#document_tag_fields');
-    var add_new_tag = $('#add_new_tag');
-    var search_tags = $('#search_tags');
+    var $source = $('#grouped_tags'),
+        $target = $('#document_tag_fields'),
+        $add_new_tag = $('#add_new_tag'),
+        $search_tags = $('#search_tags');
+
     function add_tag(text) {
-      target.append('<div class="field"><input type="checkbox" name="document[tags][]" checked="checked" value="' + text + '" />' + text + '</div>');
+      $target.append('<div class="field"><input type="checkbox" name="document[tags][]" checked="checked" value="' + text + '" />' + text + '</div>');
     }
-    add_new_tag.keypress(function(e) {
+
+    $add_new_tag.keypress(function(e) {
       if (e.which == 13) {
         var e = $(this);
-        var tag = $.trim(e.val());  
+        var tag = $.trim(e.val());
         if (tag.match(/\S/)) {
           add_tag(tag);
           e.val('').end().blur();
         }
       }
     });
-    search_tags.autocomplete({
-      source: "<%= search_tags_path %>",
+
+    $search_tags.autocomplete({
+      source: '<%= search_tags_path %>',
       minLength: 2,
       select: function(event, ui) {
         add_tag(ui.item.value);
       },
       close: function(event, ui) {
-        search_tags.val('');
+        $search_tags.val('');
       }
     });
-    source.accordion({
+
+    $source.accordion({
       active: false,
       autoHeight: false,
       collapsible: true,
       navigation: true
     });
-//  source.find('span').on('click', function() { // 1.7
-    source.delegate('input:checkbox', 'click', function() {
+
+    $source.on('click', 'input:checkbox', function() {
       var e = $(this);
       if (e.is(':checked')) {
         add_tag(e.val());
+      } else {
+        $target.find('input:checkbox[value="' + e.val() + '"]').each(function() {
+          $(this).closest('div').remove();
+        });
       }
     });
-//  target.find('input:checkbox').on('click', function() { // 1.7
-    target.delegate('input:checkbox', 'click', function() {
+
+    $target.on('click', 'input:checkbox', function() {
       var e = $(this);
-      source.find('input:checked[value="' + e.val() + '"]').each(function() {
+      $source.find('input:checked[value="' + e.val() + '"]').each(function() {
         $(this).attr('checked', false);
-      }); 
+      });
       e.closest('div').remove();
     });
   });

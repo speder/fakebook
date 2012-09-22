@@ -1,28 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Fakebook</title>
-  <%= stylesheet_link_tag    "application" %>
-  <%= javascript_include_tag "application" %>
-  <%= csrf_meta_tags %>
-  <script type="text/javascript">
+<title>f a k e b o o k . o r g</title>
+<%= stylesheet_link_tag    'application' %>
+<%= javascript_include_tag 'application' %>
+<%= csrf_meta_tags %>
+<script type='text/javascript'>
+$(function() {
+  if (typeof EventSource === 'undefined') {
+    alert('Please use a real browser.');
+    location = 'http://caniuse.com/eventsource';
+  }
+});
+</script>
+<% unless %w(repository).include?(params[:controller]) %>
+<script type='text/javascript'>
+$(function() {
+  $( '.modified' ).showStatus({ url: '<%= repository_path %>' });
+});
+</script>
+<% end %>
 <%= yield :javascript %>
-  </script>
 </head>
 <body>
-  <div id="flash">
-    <% if alert %>
-      <div id="alert"><%= alert %></div>
-    <% end %>
-    <% if notice %>
-      <div id="notice"><%= notice %></div>
-    <% end %>
-  </div>
-  <div id="nav">
-    <%= link_to :documents, documents_path %> | 
-    <%= link_to :tags, tags_path %> | 
-    <%= render 'documents/search' %>
-  </div>
+  <div class='container'>
+    <div class='row'>
+      <div class='eleven columns'>
+        <h1>f a k e b o o k . o r g</h1>
+      </div>
+      <div class='one columns'>
+        <span>[ <%= exploded(@remote_user) %> ]</span>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='nine columns'>
 <%= yield %>
+      </div>
+      <div class='three columns'>
+        <div class='row'>
+          <ul class='nav'>
+            <li><%= link_to 'i n i t i a l i z e', new_repository_path %></li>
+            <li><%= link_to 'd o c u m e n t &middot; t i t l e s'.html_safe, documents_path %></li>
+            <li><%= link_to 'd o c u m e n t &middot; t a g s'.html_safe, tags_path %></li>
+            <li><%= render 'documents/search' %></li>
+            <li><%= link_to 's a v e &middot; c h a n g e s'.html_safe, edit_repository_path %></li>
+            <li class='modified' style='display:none'>
+              <ol></ol>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

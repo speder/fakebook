@@ -1,0 +1,33 @@
+<div id='modal' title='s a v e'>
+  <p>
+    <span class='ui-icon ui-icon-circle-check' style='float:left; margin:0 7px 50px 0;'></span>
+    <ul id='output'>
+    </ul>
+  </p>
+</div>
+
+<div id='done' style="display:none;">
+  <h3>d o n e !</h3>
+  <p>now go run <i>svn update</i> on your local repo</p>
+</div>
+
+<script type="text/javascript">
+$(function() {
+  $( '#modal' ).dialog({
+    modal: true,
+    width: 640,
+    resizable: false,
+    open: function(e, ui) {
+      $( '.ui-dialog-buttonpane' ).hide();
+    },
+    buttons: {
+      'o k': function() {
+        $( this ).dialog( 'close' );
+        $( '#done' ).show();
+      }
+    }
+  });
+
+  $( '#output' ).pubsub({ url: '<%= @pubsub_uri %>', controls: '.ui-dialog-buttonpane' });
+});
+</script>

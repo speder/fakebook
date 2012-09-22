@@ -1,1 +1,15 @@
-fakebook - manage a distributed fakebook of songs
+Set Ruby and install Gems:
+
+    rbenv local 1.9.3-p194
+    gem install bundler
+    bundle install --binstubs --path .bundle --shebang ruby-local-exec
+
+    # bin/rake db:boot
+
+Configure Nginx and restart it
+
+    script/dev
+
+Start Thin and DelayedJob
+
+    bin/foreman start -p 3000

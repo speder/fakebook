@@ -1,6 +1,10 @@
 class DocumentsController < ApplicationController
   def index
-    @document_groups = { :untagged => Document.without_tags }
+    date = 6.weeks.ago.to_date
+    @document_groups = {
+      'unidentified' => Document.without_tags,
+      "new or different since #{date.to_s(:mdy)}" => Document.new_or_changed_since(date)
+    }
     @document_groups.merge!(Document.alphabetical.group_by { |doc| doc.name.upcase[0..0] })
   end
 
@@ -20,16 +24,16 @@ class DocumentsController < ApplicationController
 
   def update
     show
-    if params[:document].present? && params[:document][:tags].present?
-      tags = params[:document][:tags]
-      flash.now[:notice] = "set #{@document.name} tags=#{tags.inspect}"
-      @document.set_tags(tags)
-    else
-      flash.now[:notice] = "removed #{@document.name} tags"
-      @document.set_tags
+    tags = params[:document][:tags] rescue nil
+    @document.update_tags(tags)
+    respond_to do |format|
+      format.html {
+        flash[:notice] = "tags = [ #{@document.tag_list} ] "
+        render :show
+      }
+      format.js {
+        render :json => { :name => @document.name, :tags => @document.tag_list }
+      }
     end
-    @document.set_tags_in_repo!
-    @document.set_tags_from_repo!
-    render :show
   end
 end
