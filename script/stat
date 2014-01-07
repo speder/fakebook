@@ -1,6 +1,0 @@
-#!/bin/sh
-
-host='fakebook'
-dir='~/app'
-
-ssh $host "cd $dir && git log --max-count=1 --color"
