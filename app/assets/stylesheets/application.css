@@ -3,6 +3,9 @@
  * and any sub-directories. You're free to add application-wide styles to this file and they'll appear at
  * the top of the compiled file, but it's generally better to create a new file per style scope.
  *= require_tree . 
+ * require scaffolds
+ * require foundation_and_overrides
+ * require jquery-ui-1.8.20.custom
  *= require_self
 */
 
@@ -14,7 +17,11 @@
 
 .ui-menu { background-color:yellow; }
 
-ul#output li { list-style-type:none; }
+ul li { list-style-type:none; }
+
+h3.ui-accordion-header a { margin-left:20px; }
+
+input#search_tags, input#add_new_tag { width:172px; height:21px; display:inline; }
 
 .updated { color:green; margin-left:10px; }
 

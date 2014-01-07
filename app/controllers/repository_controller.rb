@@ -31,12 +31,15 @@ class RepositoryController < ApplicationController
   end
 
   # svn revert --recursive
+  # synchronous svn - SLOW
   def destroy
     render :json => titles_and_paths(Document.revert)
   end
 
   private
 
+  # svn status
+  # synchronous svn - SLOW
   def init_status
     @modified = Document.status
   end

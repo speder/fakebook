@@ -25,6 +25,7 @@ class DocumentsController < ApplicationController
   def update
     show
     tags = params[:document][:tags] rescue nil
+    # synchronous svn - SLOW
     @document.update_tags(tags)
     respond_to do |format|
       format.html {

@@ -39,11 +39,11 @@ $(function() {
       <div class='three columns'>
         <div class='row'>
           <ul class='nav'>
-            <li><%= link_to 'i n i t i a l i z e', new_repository_path %></li>
-            <li><%= link_to 'd o c u m e n t &middot; t i t l e s'.html_safe, documents_path %></li>
-            <li><%= link_to 'd o c u m e n t &middot; t a g s'.html_safe, tags_path %></li>
+            <li><%= request.fullpath == '/repository/new' ? _initialize : link_to(_initialize, new_repository_path) %></li>
+            <li><%= request.fullpath == '/documents' ? by_title : link_to(by_title, documents_path) %></li>
+            <li><%= request.fullpath == '/tags' ? by_tag : link_to(by_tag, tags_path) %></li>
             <li><%= render 'documents/search' %></li>
-            <li><%= link_to 's a v e &middot; c h a n g e s'.html_safe, edit_repository_path %></li>
+            <li><%= request.fullpath == '/repository/edit' ? save_changes : link_to(save_changes, edit_repository_path) %></li>
             <li class='modified' style='display:none'>
               <ol></ol>
             </li>
