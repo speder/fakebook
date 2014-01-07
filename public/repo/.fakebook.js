@@ -1,4 +1,41 @@
 (function($) {
+  function hasStorage() {
+    try {
+      localStorage.setItem(mod, mod);
+      localStorage.removeItem(mod);
+      return true;
+    } catch(e) {
+      return false;
+    }
+  }
+  function saveColor(name, color) {
+    if (hasStorage) {
+      localStorage.setItem(name, color);
+    }
+  }
+  function getColor(name, defaultColor) {
+    var color;
+    if (hasStorage) {
+      if (color = localStorage.getItem(name)) {
+        return color;
+      }
+    }
+    return defaultColor;
+  }
+  function setColor(name, color) {
+    switch(name) {
+      case 'background':
+        $('body').css('background-color', color);
+        break;
+      case 'chord':
+        $('body span.c').css('color', color);
+        break;
+      case 'lyric':
+        $('body span').not('.c').css('color', color);
+        break;
+    }
+    return color;
+  }
   /*
    * Enter here
    */
@@ -33,31 +70,25 @@
       $('body').append(colorSelects);
       $('#color select').each(function() {
         var select = $(this);
+        var name = select.attr('name');
         for (i = 0; i < colors.length; i += 1) {
           select.append('<option style="color:'+colors[i]+'">'+colors[i]+'</option>');
         };
-        switch(select.attr('name')) {
+        switch(name) {
+          case 'background':
+            select.val(setColor(name, getColor(name, 'white')));
           case 'chord':
-            select.val('royalblue');
+            select.val(setColor(name, getColor(name, 'royalblue')));
             break;
           case 'lyric':
-            select.val('black');
+            select.val(setColor(name, getColor(name, 'black')));
             break;
-          default: // background
-            select.val('white');
         }
         select.change(function() {
+          var name = $(this).attr('name');
           var color = $(this).val();
-          switch($(this).attr('name')) {
-            case 'chord':
-              $('body span.c').css('color', color);
-              break;
-            case 'lyric':
-              $('body span').not('.c').css('color', color);
-              break;
-            default: // background
-              $('body').css('background-color', color);
-          }
+          saveColor(name, color);
+          setColor(name, color);
         });
       });
     });
@@ -78,24 +109,27 @@
     var currentKey = null;
 
     var keys = [
-      { name: 'Ab',  value: 0,   type: 'F', rel: 'Fm',  menu: 1 },
-      { name: 'A',   value: 1,   type: 'N', rel: 'F#m', menu: 1 },
-      { name: 'A#',  value: 2,   type: 'S', rel: 'Gm',  menu: 0 },
-      { name: 'Bb',  value: 2,   type: 'F', rel: 'Gm',  menu: 1 },
-      { name: 'B',   value: 3,   type: 'N', rel: 'G#m', menu: 1 },
-      { name: 'Cb',  value: 3,   type: 'F', rel: 'Abm', menu: 0 },
-      { name: 'C',   value: 4,   type: 'N', rel: 'Am',  menu: 1 },
-      { name: 'C#',  value: 5,   type: 'S', rel: 'A#m', menu: 0 },
-      { name: 'Db',  value: 5,   type: 'F', rel: 'Bbm', menu: 1 },
-      { name: 'D',   value: 6,   type: 'N', rel: 'Bm',  menu: 1 },
-      { name: 'D#',  value: 7,   type: 'S', rel: 'B#m', menu: 0 },
-      { name: 'Eb',  value: 7,   type: 'F', rel: 'Cm',  menu: 1 },
-      { name: 'E',   value: 8,   type: 'N', rel: 'C#m', menu: 1 },
-      { name: 'F',   value: 9,   type: 'N', rel: 'Dm',  menu: 1 },
-      { name: 'F#',  value: 10,  type: 'S', rel: 'D#m', menu: 1 },
-      { name: 'Gb',  value: 10,  type: 'F', rel: 'Ebm', menu: 0 },
-      { name: 'G',   value: 11,  type: 'N', rel: 'Em',  menu: 1 },
-      { name: 'G#',  value: 0,   type: 'S', rel: 'E#m', menu: 0 }
+      { name: 'Ab',  value: 0,   type: 'F', rel: 'Fm',  menu: 1 }, //  0
+      { name: 'A',   value: 1,   type: 'N', rel: 'F#m', menu: 1 }, //  1
+      { name: 'A#',  value: 2,   type: 'S', rel: 'Gm',  menu: 0 }, //  2
+      { name: 'Bb',  value: 2,   type: 'F', rel: 'Gm',  menu: 1 }, //  3
+      { name: 'B',   value: 3,   type: 'N', rel: 'G#m', menu: 1 }, //  4
+      { name: 'B#',  value: 4,   type: 'S', rel: 'Am',  menu: 0 }, //  5
+      { name: 'Cb',  value: 3,   type: 'F', rel: 'Abm', menu: 0 }, //  6
+      { name: 'C',   value: 4,   type: 'N', rel: 'Am',  menu: 1 }, //  7
+      { name: 'C#',  value: 5,   type: 'S', rel: 'A#m', menu: 0 }, //  8
+      { name: 'Db',  value: 5,   type: 'F', rel: 'Bbm', menu: 1 }, //  9
+      { name: 'D',   value: 6,   type: 'N', rel: 'Bm',  menu: 1 }, // 10
+      { name: 'D#',  value: 7,   type: 'S', rel: 'B#m', menu: 0 }, // 11
+      { name: 'Eb',  value: 7,   type: 'F', rel: 'Cm',  menu: 1 }, // 12
+      { name: 'E',   value: 8,   type: 'N', rel: 'C#m', menu: 1 }, // 13
+      { name: 'E#',  value: 9,   type: 'S', rel: 'Dm',  menu: 0 }, // 14
+      { name: 'Fb',  value: 8,   type: 'F', rel: 'Dbm', menu: 0 }, // 15
+      { name: 'F',   value: 9,   type: 'N', rel: 'Dm',  menu: 1 }, // 16
+      { name: 'F#',  value: 10,  type: 'S', rel: 'D#m', menu: 1 }, // 17
+      { name: 'Gb',  value: 10,  type: 'F', rel: 'Ebm', menu: 0 }, // 18
+      { name: 'G',   value: 11,  type: 'N', rel: 'Em',  menu: 1 }, // 19
+      { name: 'G#',  value: 0,   type: 'S', rel: 'E#m', menu: 0 }  // 20
     ];
 
     var getKeyByName = function (name) {
@@ -113,11 +147,20 @@
         return input.substr(0, 1);
     };
 
+    var preferNaturalKey = function (key) {
+      if (key.name === 'B#' || key.name === 'Cb') {
+        return keys[7]; // C
+      } else if (key.name === 'E#' || key.name === 'Fb') {
+        return keys[16]; // F
+      }
+      return key;
+    };
+
     var getNewKey = function (oldKey, delta, targetKey) {
       var keyValue = getKeyByName(oldKey).value + delta,
           naturalKeyValues = ['1', '3', '4', '6', '8', '9', '11'],
-          sharpKeyNames = ['A', 'A#', 'B', 'C#', 'D', 'D#', 'E', 'F#', 'G', 'G#'],
-          flatKeyNames = ['Ab', 'Bb', 'C', 'Db', 'Eb', 'F'],
+          sharpKeyNames = ['A', 'A#', 'B', 'B#', 'C#', 'D', 'D#', 'E', 'E#', 'F#', 'G', 'G#'],
+          flatKeyNames = ['Ab', 'Bb', 'Cb', 'C', 'Db', 'Eb', 'Fb', 'F', 'Gb'],
           i;
 
       if (keyValue > 11) {
@@ -129,25 +172,25 @@
       if ($.inArray(keyValue, naturalKeyValues) >= 0) {
         for (i=0;i<keys.length;i++) {
           if (keys[i].value == keyValue) {
-            return keys[i];
+            return preferNaturalKey(keys[i]);
           }
         }
       } else if ($.inArray(targetKey.name, sharpKeyNames) >= 0) {
         for (i=0;i<keys.length;i++) {
           if (keys[i].value == keyValue && keys[i].type == "S") {
-            return keys[i];
+            return preferNaturalKey(keys[i]);
           }
         }
       } else if ($.inArray(targetKey.name, flatKeyNames) >= 0) {
         for (i=0;i<keys.length;i++) {
           if (keys[i].value == keyValue && keys[i].type == "F") {
-            return keys[i];
+            return preferNaturalKey(keys[i]);
           }
         }
       }
       for (i=0;i<keys.length;i++) {
         if (keys[i].value == keyValue) {
-          return keys[i];
+          return preferNaturalKey(keys[i]);
         }
       }
     };
@@ -314,10 +357,8 @@
   };
 
   $.fn.transpose.defaults = {
-    chordRegex: /^([A-G\|](\d\/\d)?[b\#]?(maj|m|dim|aug|sus|\+|\-)?\d?(b|\#|\+|\-)?\d?)*(\/[A-G][b\#]*)*$/,
-//    chordReplaceRegex: re=/([A-G\|](\d\/\d)?[b\#]?(maj|m|dim|aug|sus|\+|\-)?\d?(b|\#|\+|\-)?\d?)/g
-    chordReplaceRegex: re=/([A-G\|](\d\/\d)?[b\#]?(maj|m|dim|aug|sus|\+|\-)?\d?(b|\#|\+|\-)?\d?(\/[A-G][b\#]?)?)/g
+    chordRegex: /^([A-G\|nc](\d\/\d)?[b\#]?(maj|m|dim|o|aug|sus|\+|\-)?\d?(b|\#|\+|\-)?\d?)*(\/[A-G][b\#]*)*$/,
+//  chordReplaceRegex: re=/([A-G\|](\d\/\d)?[b\#]?(maj|m|dim|o|aug|sus|\+|\-)?\d?(b|\#|\+|\-)?\d?)/g
+    chordReplaceRegex: re=/([A-G\|](\d\/\d)?[b\#]?(maj|m|dim|o|aug|sus|\+|\-)?\d?(b|\#|\+|\-)?\d?(\/[A-G][b\#]?)?)/g
   };
 })(jQuery);
-
-

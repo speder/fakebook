@@ -8,6 +8,28 @@
 <body class="index">
   <div id="_left">
     <div id="_top"></div>
+    <% if @recent.present? %>
+      <% id = '_Recent' %>
+      <div class="group">
+        <a href="#" onclick="$('#<%= id %>').toggle(250); return false;"><span class="group"><i>new or different</i></span></a>
+        <span id="_recent_date"><code><%= @recent_date.to_s(:mdy) %> - <%= Time.now.to_s(:mdy) %></code></span>
+      </div>
+      <ul id="<%= id %>" class="toggle">
+      <% @recent.inject({}) do |hash, doc|
+          key = doc.name.gsub(/\..+$/, '')
+          hash[key] ||= []
+          hash[key] << doc.name
+          hash
+        end.sort { |a, b| a.first.downcase <=> b.first.downcase }.each do |song| %>
+        <% id = 'Recent_' + song.first.gsub(/\W/, '_') %>
+        <li><a href="#" onclick="$('#<%= id %>').toggle(250); return false;"><b><%= song.first %></b></a><ul id="<%= id %>" class="toggle">
+        <% song.last.sort.each do |doc| %>
+           <li><a class="document" target="_blank" href="<%= URI.escape(doc) %>"><%= doc %></a></li>
+        <% end %>
+        </ul></li>
+      <% end %>
+      </ul>
+    <% end %>
     <% @groups.sort_by { |x| x.first }.each do |ary| %>
       <% group = ary.first %>
       <% array = ary.last %>
@@ -44,28 +66,6 @@
           <% end %>
           </ul></li>
         <% end %>
-      <% end %>
-      </ul>
-    <% end %>
-    <% if @recent.present? %>
-      <% id = '_Recent' %>
-      <div class="group">
-        <a href="#" onclick="$('#<%= id %>').toggle(250); return false;"><span class="group"><i>new or different</i></span></a>
-        <span id="_recent_date"><code><%= @recent_date.to_s(:mdy) %> - <%= Time.now.to_s(:mdy) %></code></span>
-      </div>
-      <ul id="<%= id %>" class="toggle">
-      <% @recent.inject({}) do |hash, doc|
-          key = doc.name.gsub(/\..+$/, '')
-          hash[key] ||= []
-          hash[key] << doc.name
-          hash
-        end.sort { |a, b| a.first.downcase <=> b.first.downcase }.each do |song| %>
-        <% id = 'Recent_' + song.first.gsub(/\W/, '_') %>
-        <li><a href="#" onclick="$('#<%= id %>').toggle(250); return false;"><b><%= song.first %></b></a><ul id="<%= id %>" class="toggle">
-        <% song.last.sort.each do |doc| %>
-           <li><a class="document" target="_blank" href="<%= URI.escape(doc) %>"><%= doc %></a></li>
-        <% end %>
-        </ul></li>
       <% end %>
       </ul>
     <% end %>

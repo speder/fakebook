@@ -46,8 +46,9 @@ namespace :tags do
     if (doc = Document.named(ENV['doc']).first)
       puts 'setting %s - %s' % [ doc.name, ENV['tags'] ]
       doc.set_tags(ENV['tags'])
-      doc.set_tags_in_repo!
-      doc.set_tags_from_repo!
+      doc.write_tags_to_repo
+      doc.read_tags_from_repo
+      doc.save!
     else
       puts "cannot find #{ENV['doc']}"
     end

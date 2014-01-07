@@ -1,0 +1,33 @@
+#!/bin/sh
+
+host='fakebook'
+dir='~/app'
+
+echo 'updating repo'
+ssh $host \
+    "cd $dir && git pull"
+
+echo 'bundling gems'
+ssh $host \
+    "cd $dir && bundle install --binstubs --deployment --path .bundle --without development test"
+
+if [ "$1" = 'precompile' ]; then
+    echo 'precompiling assets'
+    ssh $host \
+        "cd $dir && bin/rake assets:precompile"
+else
+    echo 'skipping asset precompiliation'
+    echo "(use $0 precompile to force)"
+fi
+
+echo 'restarting thin'
+ssh $host \
+    "cd $dir && script/web restart"
+
+echo 'restarting delayed job'
+ssh $host \
+    "cd $dir && script/worker stop && script/worker start"
+
+echo 'reloading nginx'
+ssh root@${host} \
+    '/usr/local/nginx/sbin/nginx -s reload'

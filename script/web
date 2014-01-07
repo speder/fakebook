@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# what: thin start/stop script for monit
+# where: fakebook.org
+# how: config/monit/web-0
+#      config/monit/web-1
+
+# args
+# num description options default
+# 1   operation   start|stop  start
+# 2   port        3000|3001   <both>
+
+app_dir=/home/fakebook/app
+
+export BUNDLE_GEMFILE=${app_dir}/Gemfile
+export LANG=en_US.UTF-8
+export PATH=/bin:/usr/bin:/usr/local/bin
+export RAILS_ENV=production
+
+cd ${app_dir} && bundle exec ${app_dir}/bin/thin ${1:-start} -C ${app_dir}/config/thin.yml ${2:+-o $2}

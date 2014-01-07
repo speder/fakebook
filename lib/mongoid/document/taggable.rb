@@ -29,7 +29,8 @@ module Mongoid
 
       included do
         field :tags, :type => Array
-        index :tags
+#       index :tags
+        index({tags: 1})
       end
 
       module InstanceMethods

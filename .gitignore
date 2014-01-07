@@ -1,6 +1,10 @@
 bin
 .bundle
+log/*.gz
 log/*.log
-.rbenv-version
+log/*.pid
+log/*.yml
+public/assets
+.ruby-version
 .sass-cache/
 tmp/

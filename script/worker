@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# what: delayed_job start/stop script for monit
+# where: fakebook.org
+# how: config/monit/worker-0
+
+# args
+# num description options     default
+# 1   operation   start|stop  start
+
+app_dir=/home/fakebook/app
+
+export BUNDLE_GEMFILE=${app_dir}/Gemfile
+export LANG=en_US.UTF-8
+export PATH=/bin:/usr/bin:/usr/local/bin
+export RAILS_ENV=production
+
+cd ${app_dir} && bundle exec ${app_dir}/script/delayed_job --pid-dir ${app_dir}/log ${1:-start}

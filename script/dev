@@ -1,0 +1,23 @@
+#!/bin/bash
+
+app_dir=$(cd . && pwd -P)
+nginx_config_dir=/usr/local/nginx/conf/conf.d
+
+# reconfigure nginx
+for config in ${nginx_config_dir}/*; do sudo rm -f $config; done
+sudo ln -s ${app_dir}/config/nginx.dev.conf ${nginx_config_dir}/fakebook.org
+
+# (re)start nginx
+pidfile='/usr/local/nginx/logs/nginx.pid'
+[ -r $pidfile ] && ps -p `cat $pidfile` > /dev/null
+if [ $? -eq 0 ]; then
+    sudo /usr/local/nginx/sbin/nginx -s reload
+else
+    sudo /usr/local/nginx/sbin/nginx
+fi
+
+# start mongod
+sudo start mongodb
+
+# status
+sudo lsof -nPi | grep "mongodb\|nginx"
